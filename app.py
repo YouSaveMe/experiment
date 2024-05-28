@@ -28,12 +28,14 @@ def evaluate_answer(stage, student_answer, context):
                 {"role": "user", "content": prompt}
             ]
         )
-        # API 응답에서 필요한 데이터만 추출하여 사전으로 반환
-        content = completion.choices[0].message['content'] if 'content' in completion.choices[0].message else "No content available"
-        return {
+        # API 응답을 직렬화 가능한 딕셔너리로 변환
+        response_data = {
             "stage": stage,
-            "content": content
+            "content": completion.choices[0].message['content'] if 'content' in completion.choices[0].message else "No content available",
+            "model": completion.model,
+            "object_type": completion.object
         }
+        return response_data
     except Exception as e:
         print(f"Error during OpenAI API call: {e}")
         return {"error": str(e)}
