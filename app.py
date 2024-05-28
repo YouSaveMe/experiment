@@ -28,11 +28,9 @@ def evaluate_answer(stage, student_answer, context):
                 {"role": "user", "content": prompt}
             ]
         )
-        # API 응답을 직렬화 가능한 딕셔너리로 변환
-        
         response_data = {
             "stage": stage,
-            "content": completion.choices[0].message.content if 'content' in completion.choices[0].message.content else "No content available",
+            "content": completion.choices[0].message.content,  # 'content' 속성에 직접 접근
             "model": completion.model,
             "object_type": completion.object
         }
@@ -40,6 +38,7 @@ def evaluate_answer(stage, student_answer, context):
     except Exception as e:
         print(f"Error during OpenAI API call: {e}")
         return {"error": str(e)}
+
 
 @app.route('/evaluate', methods=['POST'])
 def evaluate():
