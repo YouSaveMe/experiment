@@ -5,7 +5,7 @@ import openai
 openai.api_key = 'your-api-key'
 
 app = Flask(__name__)
-CORS(app)  # CORS 설정 추가
+CORS(app)
 
 def evaluate_answer(student_answer, context):
     prompt = f"""
@@ -17,20 +17,25 @@ def evaluate_answer(student_answer, context):
     2. 답변의 단점:
     3. 보강점 안내:
     """
-    response = openai.Completion.create(
-        engine="davinci-codex",
-        prompt=prompt,
-        max_tokens=300
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ]
     )
-    return response.choices[0].text.strip()
+    return response['choices'][0]['message']['content']
 
 @app.route('/evaluate', methods=['POST'])
 def evaluate():
-    data = request.get_json()
-    context = data['context']
-    student_answers = data['answers']
-    feedback = {stage: evaluate_answer(answer, context) for stage, answer in student_answers.items()}
-    return jsonify(feedback)
+    try:
+        data = request.get_json()
+        context = data['context']
+        student_answers = data['answers']
+        feedback = {stage: evaluate_answer(answer, context) for stage, answer in student_answers.items()}
+        return jsonify(feedback)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
