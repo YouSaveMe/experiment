@@ -29,10 +29,10 @@ def evaluate_answer(stage, student_answer, context):
             ]
         )
         # API 응답을 직렬화 가능한 딕셔너리로 변환
-        print(dir(completion.choices[0].message))
+        
         response_data = {
             "stage": stage,
-            "content": completion.choices[0].message['content'] if 'content' in completion.choices[0].message else "No content available",
+            "content": completion.choices[0].message.content if 'content' in completion.choices[0].message.content else "No content available",
             "model": completion.model,
             "object_type": completion.object
         }
