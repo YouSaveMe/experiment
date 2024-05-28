@@ -28,10 +28,15 @@ def evaluate_answer(stage, student_answer, context):
                 {"role": "user", "content": prompt}
             ]
         )
-        return completion.choices[0].message
+        # API 응답에서 필요한 데이터만 추출하여 사전으로 반환
+        content = completion.choices[0].message['content'] if 'content' in completion.choices[0].message else "No content available"
+        return {
+            "stage": stage,
+            "content": content
+        }
     except Exception as e:
         print(f"Error during OpenAI API call: {e}")
-        return None
+        return {"error": str(e)}
 
 @app.route('/evaluate', methods=['POST'])
 def evaluate():
@@ -40,8 +45,6 @@ def evaluate():
         context = data['context']
         student_answers = data['answers']
         feedback = {stage: evaluate_answer(stage, answer, context) for stage, answer in student_answers.items()}
-        if None in feedback.values():
-            return jsonify({'error': 'Error generating feedback.'}), 500
         return jsonify(feedback)
     except Exception as e:
         print(f"Error in evaluate endpoint: {e}")
