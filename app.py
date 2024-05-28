@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import openai
+from openai import OpenAI
 
-openai.api_key = 'your-api-key'
+client = OpenAI(api_key='your-api-key')
 
 app = Flask(__name__)
 CORS(app)
@@ -19,14 +19,14 @@ def evaluate_answer(stage, student_answer, context):
     3. 보강점 안내:
     """
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        completion = client.chat.completions.create(
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt}
             ]
         )
-        return response['choices'][0]['message']['content']
+        return completion.choices[0].message['content']
     except Exception as e:
         print(f"Error during OpenAI API call: {e}")
         return None
