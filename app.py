@@ -28,7 +28,7 @@ def evaluate_answer(stage, student_answer, context):
                 {"role": "user", "content": prompt}
             ]
         )
-        return completion.choices[0].message['content']
+        return completion.choices[0].message
     except Exception as e:
         print(f"Error during OpenAI API call: {e}")
         return None
