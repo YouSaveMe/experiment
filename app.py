@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import openai
 
 openai.api_key = 'your-api-key'
 
 app = Flask(__name__)
+CORS(app)  # CORS 설정 추가
 
 def evaluate_answer(student_answer, context):
     prompt = f"""
@@ -15,7 +17,6 @@ def evaluate_answer(student_answer, context):
     2. 답변의 단점:
     3. 보강점 안내:
     """
-
     response = openai.Completion.create(
         engine="davinci-codex",
         prompt=prompt,
